@@ -31,3 +31,6 @@
 
   `python demo.py --in_path='추론할 이미지가 들어있는 폴더 경로' --out_path='추론된 이미지가 저장되는 폴더 경로'`
   
+  ## 4. 결과
+  - Deeplab_allfor폴더내에 run 폴더가 자동 생성되며 train.py를 실행할때마다 해당 학습에 대한 데이터가 저장될 experiment_* 폴더가 새로 생성됨
+  
