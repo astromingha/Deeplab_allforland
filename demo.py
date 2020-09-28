@@ -48,6 +48,14 @@ def main():
         else:
             args.sync_bn = False
 
+    if args.dataset_cat == 'detail':
+        num_class = 43
+    elif args.dataset_cat == 'middle':
+        num_class = 24
+    elif args.dataset_cat == 'main':
+        num_class = 9
+    else:
+        raise NotImplementedError
 
     model = DeepLab(num_classes=43,
                     backbone=args.backbone,
