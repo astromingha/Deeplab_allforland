@@ -34,3 +34,6 @@
 ## 4. 결과
 - 경로 자동생성 :  Deeplab_allforland/run/deeplab-(backbone이름)/experiment_*
 - 결과물 및 로그 : 학습파라미터 관련 로그, checkpoint.tar.pth, tensorboard 로그용 tfrecords
+
+### Base code
+- https://github.com/jfzhang95/pytorch-deeplab-xception.git
