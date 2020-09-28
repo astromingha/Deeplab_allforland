@@ -28,7 +28,7 @@ def main():
                         help='network output stride (default: 8)')
     parser.add_argument('--no-cuda', action='store_true', default=False,            #True 시 GPU 사용안
                         help='disables CUDA training')
-    parser.add_argument('--gpu-ids', type=str, default='0',함                        #사용할 GPU id
+    parser.add_argument('--gpu-ids', type=str, default='0',                        #사용할 GPU id
                         help='use which gpu to train, must be a \
                         comma-separated list of integers only (default=0)')
     parser.add_argument('--crop-size', type=int, default=513,                       #사진 입력 사이즈
