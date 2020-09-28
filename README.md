@@ -8,7 +8,7 @@
 
    `virtualenv --system-site-packages -p python3 ./venv`
    
-## 2. virtualenv 활성화 후 파이썬 모듈 pip 설치
+## 2. virtualenv 활성화 혹은 conda 활성화 후 파이썬 모듈 pip 설치
 - virtualenv 활성화 :
 
     `source ./venv/bin/activate`
