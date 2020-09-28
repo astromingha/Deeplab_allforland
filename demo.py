@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--backbone', type=str, default='xception',                 # 추론 네트워크 백본 선택(checkpoint 와 동일해야 함)
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
-    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',  #checkpoint 경로 입력(checkpoint이름 포함)
+    parser.add_argument('--ckpt', type=str, default='run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',  #checkpoint 경로 입력(checkpoint이름 포함)
                         help='saved model')
     parser.add_argument('--out-stride', type=int, default=16,                       #out stride 값(checkpoint와 동일해야 함)
                         help='network output stride (default: 8)')
