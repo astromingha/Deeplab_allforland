@@ -193,7 +193,7 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
     parser.add_argument('--dataset_cat', type=str, default='detail',    # 학습할 토지피복도 유형 선택 (detail:세분류, middle:중분류, main:대분류)
                         choices=['detail', 'middle', 'main'], help='category')
-    parser.add_argument('--dataset_path', type=str, help='category', default='/home/user/NAS/Internal/Dataset/Dataset_allfor') # 학습데이터 경로의 root 경로 입력(train과 test 폴더가 들어있는 폴더 경로 입력)
+    parser.add_argument('--dataset_path', type=str, help='category', default='../Landcover_dataset') # 학습데이터 경로의 root 경로 입력(train과 test 폴더가 들어있는 Landcover_dataset 경로 입력)
     parser.add_argument('--backbone', type=str, default='xception', # Backbone 선택 (xception, resnet, drn, mobilenet 중 선택하여 입력)
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
