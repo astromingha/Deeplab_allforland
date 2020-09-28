@@ -21,11 +21,11 @@
 ## 3. 실행
 - 학습 진행(train.py) : 
 
-  `python train.py --dataset_path='데이터셋 root 경로(train,test폴더가 들어있는 폴더 경로)'`
+  `python train.py --dataset_path='데이터셋 root 경로(train,valid폴더가 들어있는 폴더 경로)'`
   
 - 평가만 진행(val.py) :
 
-  `python val.py --dataset_path='데이터셋 root 경로(train,test폴더가 들어있는 폴더 경로)'`
+  `python val.py --dataset_path='데이터셋 root 경로(train,valid폴더가 들어있는 폴더 경로)'`
   
 - 학습된 데이터로 추론 결과 이미지 확인 :
 
