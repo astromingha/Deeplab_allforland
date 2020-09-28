@@ -18,15 +18,15 @@ def main():
     parser.add_argument('--dataset_cat', type=str, default='detail',                # 추론할 토지피복도 유형 선택 (detail:세분류, middle:중분류, main:대분류)
                         choices=['detail', 'middle', 'main'], help='category')
     parser.add_argument('--in_path', type=str,  default='/home/user/')              # 추론할 이미지가 들어있는 폴더 경로 입력
-    parser.add_argument('--out_path', type=str,  default='/home/user/')             # 추론된 이미지 결과가 저장될 폴더 경로 입
+    parser.add_argument('--out_path', type=str,  default='/home/user/pytest/refer')             # 추론된 이미지 결과가 저장될 폴더 경로 입
     parser.add_argument('--backbone', type=str, default='xception',                 # 추론 네트워크 백본 선택(checkpoint 와 동일해야 함)
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
-    parser.add_argument('--ckpt', type=str, default='run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',  #checkpoint 경로 입력(checkpoint이름 포함)
+    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',  #checkpoint 경로 입력(checkpoint이름 포함)
                         help='saved model')
     parser.add_argument('--out-stride', type=int, default=16,                       #out stride 값(checkpoint와 동일해야 함)
                         help='network output stride (default: 8)')
-    parser.add_argument('--no-cuda', action='store_true', default=False,            #True 시 GPU 사용안
+    parser.add_argument('--no-cuda', action='store_true', default=True,            #True 시 GPU 사용안
                         help='disables CUDA training')
     parser.add_argument('--gpu-ids', type=str, default='0',                        #사용할 GPU id
                         help='use which gpu to train, must be a \
@@ -42,12 +42,6 @@ def main():
         except ValueError:
             raise ValueError('Argument --gpu_ids must be a comma-separated list of integers only')
 
-    if args.sync_bn is None:
-        if args.cuda and len(args.gpu_ids) > 1:
-            args.sync_bn = True
-        else:
-            args.sync_bn = False
-
     if args.dataset_cat == 'detail':
         num_class = 43
     elif args.dataset_cat == 'middle':
@@ -60,7 +54,7 @@ def main():
     model = DeepLab(num_classes=43,
                     backbone=args.backbone,
                     output_stride=args.out_stride,
-                    sync_bn=None,
+                    sync_bn=False,
                     freeze_bn=False)
 
     ckpt = torch.load(args.ckpt, map_location='cpu')
@@ -71,6 +65,10 @@ def main():
         tr.ToTensor()])
 
     img_list = [i for i in os.listdir(args.in_path) if '.jpg' in i.lower() or '.png' in i.lower()]
+
+    if not len(img_list):
+        raise NotImplementedError("No image to infer")
+
     for imgfile in img_list:
         image = Image.open(args.in_path + '/'+imgfile).convert('RGB')
         target = Image.open(args.in_path+ '/'+imgfile).convert('L')
