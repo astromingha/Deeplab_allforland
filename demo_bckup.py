@@ -11,18 +11,16 @@ from PIL import Image
 from torchvision import transforms
 from dataloaders.utils import  *
 from torchvision.utils import make_grid, save_image
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
-    parser.add_argument('--dataset_cat', type=str, default='detail',
-                        choices=['detail', 'middle', 'main'], help='category')
-    parser.add_argument('--in_path', type=str,  default='/home/user/test_img')
-    parser.add_argument('--out_path', type=str,  default='/home/user/2nd_data')
+    parser.add_argument('--in-path', type=str,  default='/home/user/Desktop/test/segtest.jpg')
+    parser.add_argument('--out-path', type=str,  default='/home/user/Desktop/test/test_infer.jpg')
     parser.add_argument('--backbone', type=str, default='xception',
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
-    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run_2nd_best_butnolog/cityscapes/deeplab-xception/experiment_5/checkpoint.pth.tar',
+    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar', # 추론을 실행 할 checkpoint 경로 입력
                         help='saved model')
     parser.add_argument('--out-stride', type=int, default=16,
                         help='network output stride (default: 8)')
@@ -68,25 +66,22 @@ def main():
         tr.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         tr.ToTensor()])
 
-    img_list = [i for i in os.listdir(args.in_path) if '.jpg' in i.lower() or '.png' in i.lower()]
-    for imgfile in img_list:
-        image = Image.open(args.in_path + '/'+imgfile).convert('RGB')
-        target = Image.open(args.in_path+ '/'+imgfile).convert('L')
-        sample = {'image': image, 'label': target}
-        tensor_in = composed_transforms(sample)['image'].unsqueeze(0)
+    image = Image.open(args.in_path).convert('RGB')
+    target = Image.open(args.in_path).convert('L')
+    sample = {'image': image, 'label': target}
+    tensor_in = composed_transforms(sample)['image'].unsqueeze(0)
 
-        model.eval()
-        if args.cuda:
-            image = image.cuda()
-        with torch.no_grad():
-            output = model(tensor_in)
+    model.eval()
+    if args.cuda:
+        image = image.cuda()
+    with torch.no_grad():
+        output = model(tensor_in)
 
-        grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy(),dataset=args.dataset_cat),
-                                3, normalize=False, range=(0, 255))
-        save_image(grid_image, args.out_path+'/'+imgfile)
+    grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy()),
+                            3, normalize=False, range=(0, 255))
     print("type(grid) is: ", type(grid_image))
     print("grid_image.shape is: ", grid_image.shape)
-
+    save_image(grid_image, args.out_path)
 
 if __name__ == "__main__":
    main()

@@ -18,7 +18,7 @@ class LandcoverSegmentation(data.Dataset):
             # self.images_base = os.path.join(self.root,'detail','leftImg8bit', self.split)
             self.images_base = os.path.join(self.root,self.split, 'image', 'image')
             # self.annotations_base = os.path.join(self.root, 'gtFine', self.split)
-            if self.split == train:
+            if self.split == "train":
                 self.annotations_base = os.path.join(self.root, self.split, 'mask_detail', 'mask')
             else:
                 self.annotations_base = os.path.join(self.root, self.split, 'mask', 'mask')
@@ -50,7 +50,7 @@ class LandcoverSegmentation(data.Dataset):
             self.valid_classes = [1, 2, 3, 4, 5, 6, 7]
             self.class_names = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         else:
-            raise ArgumentError("Dataset category is required.")
+            raise NotImplementedError
 
         self.files[split] = self.recursive_glob(rootdir=self.images_base)
 

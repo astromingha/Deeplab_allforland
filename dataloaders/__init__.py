@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 
 def make_data_loader(args, **kwargs):
     train_set = Landcover.LandcoverSegmentation(args, split='train')
-    val_set = Landcover.LandcoverSegmentation(args, split='val')
+    val_set = Landcover.LandcoverSegmentation(args, split='test')
     test_set = Landcover.LandcoverSegmentation(args, split='test')
 
     num_class = train_set.NUM_CLASSES

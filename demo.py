@@ -4,23 +4,25 @@
 import argparse
 import os
 import numpy as np
-
+from tqdm import tqdm
 from modeling.deeplab import *
 from dataloaders import custom_transforms as tr
 from PIL import Image
 from torchvision import transforms
 from dataloaders.utils import  *
 from torchvision.utils import make_grid, save_image
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
-    parser.add_argument('--in-path', type=str,  default='/home/user/Desktop/test/segtest.jpg')
-    parser.add_argument('--out-path', type=str,  default='/home/user/Desktop/test/test_infer.jpg')
+    parser.add_argument('--dataset_cat', type=str, default='detail',
+                        choices=['detail', 'middle', 'main'], help='category')
+    parser.add_argument('--in_path', type=str,  default='/home/user/Dataset/LandCover/4th_data/cityscape_format/1st_newdataset/leftImg8bit/val')
+    parser.add_argument('--out_path', type=str,  default='/home/user/ddddddd')
     parser.add_argument('--backbone', type=str, default='xception',
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
-    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/model_best.pth.tar',
+    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',
                         help='saved model')
     parser.add_argument('--out-stride', type=int, default=16,
                         help='network output stride (default: 8)')
@@ -53,7 +55,14 @@ def main():
         else:
             args.sync_bn = False
 
-    model = DeepLab(num_classes=43,
+    if args.dataset_cat == 'detail':
+        num_class= 43
+    elif args.dataset_cat == 'middle':
+        num_class = 24
+    elif args.dataset_cat == 'main':
+        num_class = 9
+
+    model = DeepLab(num_classes=num_class,
                     backbone=args.backbone,
                     output_stride=args.out_stride,
                     sync_bn=args.sync_bn,
@@ -66,22 +75,29 @@ def main():
         tr.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         tr.ToTensor()])
 
-    image = Image.open(args.in_path).convert('RGB')
-    target = Image.open(args.in_path).convert('L')
-    sample = {'image': image, 'label': target}
-    tensor_in = composed_transforms(sample)['image'].unsqueeze(0)
+    if not os.path.isdir(args.out_path):
+        os.mkdir(args.out_path)
 
-    model.eval()
-    if args.cuda:
-        image = image.cuda()
-    with torch.no_grad():
-        output = model(tensor_in)
+    img_list = [os.path.join(args.in_path,i) for i in os.listdir(args.in_path) if '.jpg' in i.lower() or '.png' in i.lower()]
 
-    grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy()),
-                            3, normalize=False, range=(0, 255))
+    for imgfile in tqdm(img_list):
+        image = Image.open(os.path.join(args.in_path,imgfile)).convert('RGB')
+        target = Image.open(os.path.join(args.in_path,imgfile)).convert('L')
+        sample = {'image': image, 'label': target}
+        tensor_in = composed_transforms(sample)['image'].unsqueeze(0)
+
+        model.eval()
+        if args.cuda:
+            image = image.cuda()
+        with torch.no_grad():
+            output = model(tensor_in)
+
+        grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy(),dataset=args.dataset_cat),
+                                3, normalize=False, range=(0, 255))
+        save_image(grid_image, os.path.join(args.out_path,imgfile))
     print("type(grid) is: ", type(grid_image))
     print("grid_image.shape is: ", grid_image.shape)
-    save_image(grid_image, args.out_path)
+
 
 if __name__ == "__main__":
    main()
