@@ -1,7 +1,7 @@
 
 
 
-# Deeplab v3 plus for aLandcover segmentation 
+# Deeplab v3 plus for Landcover segmentation 
 
 ## 1. conda 혹은 virtualenv 설치
 - virtualenv 설치 명령 :
