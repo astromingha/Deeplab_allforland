@@ -107,8 +107,8 @@ class Trainer(object):
         Acc_class = self.evaluator.Pixel_Accuracy_Class()
         mIoU, iou, confusion_matrix = self.evaluator.Mean_Intersection_over_Union_IOU()
         FWIoU = self.evaluator.Frequency_Weighted_Intersection_over_Union()
-        # checkpoint 저장위치에 class별 iou와 confusion_matrix 저장
-
+        
+        # checkpoint 저장위치에 class별 iou와 confusion_matrix csv로 저장
         self.saver.save_metrics(iou, confusion_matrix)
         print('Validation:')
         print('[Epoch: %d, numImages: %5d]' % (epoch, i * self.args.batch_size + image.data.shape[0]))
@@ -119,9 +119,9 @@ class Trainer(object):
 def main():
     # 학습 옵션 및 하이퍼파라미터 사용자 입력부분. default=에 원하는 값 입력
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
-    parser.add_argument('--dataset_cat', type=str, default='detail',    # 학습할 토지피복도 유형 선택 (detail:세분류, middle:중분류, main:대분류)
+    parser.add_argument('--dataset_cat', type=str, default='detail',    # 학습할 토지피복도 유형 선택 (detail:세분류, middle:중분류, main:대분류, 현재 데이터셋은 세분류만 지원)
                         choices=['detail', 'middle', 'main'], help='category')
-    parser.add_argument('--dataset_path', type=str, help='category', default='/home/user/NAS/Internal/Dataset/Dataset_allfor') # 학습데이터 경로의 root 경로 입력(train과 test 폴더가 들어있는 폴더 경로 입력)
+    parser.add_argument('--dataset_path', type=str, help='category', default=='../Landcover_dataset') # 학습데이터 경로의 root 경로 입력(train과 test 폴더가 들어있는 Landcover_dataset 경로 입력)
     parser.add_argument('--backbone', type=str, default='xception', # Backbone 선택 (xception, resnet, drn, mobilenet 중 선택하여 입력)
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
@@ -174,7 +174,7 @@ def main():
     parser.add_argument('--seed', type=int, default=1, metavar='S', # 학습에 사용되는 random값에 대한 시드 결정
                         help='random seed (default: 1)')
     # checking point
-    parser.add_argument('--resume', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',    #학습 재개할 '.pth.tar' 파일 경로(없을시 None입력)
+    parser.add_argument('--resume', type=str, default='run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',    #학습 재개할 '.pth.tar' 파일 경로(없을시 None입력)
                         help='put the path to resuming file if needed')
     parser.add_argument('--checkname', type=str, default=None, # 학습 결과 저장시 폴더 이름 결정(None 일시 'run/deeplab-(backbone이름)'으로 자동저장)
                         help='set the checkpoint name')
