@@ -15,7 +15,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
-    parser.add_argument('--in-path', type=str,  default='/home/user/Desktop/test/segtest.jpg')
+    parser.add_argument('--in-path', type=str,  default='/home/user/changwon_ea1_24_22.jpg')
     parser.add_argument('--out-path', type=str,  default='/home/user/Desktop/test/test_infer.jpg')
     parser.add_argument('--backbone', type=str, default='xception',
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],

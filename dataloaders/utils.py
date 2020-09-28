@@ -21,22 +21,15 @@ def decode_segmap(label_mask, dataset, plot=False):
     Returns:
         (np.ndarray, optional): the resulting decoded color image.
     """
-    # if dataset == 'pascal' or dataset == 'coco':
-    #     n_classes = 21
-    #     label_colours = get_pascal_labels()
-    # elif dataset == 'cityscapes':
-    #     n_classes = 43#37
-    #     label_colours = get_cityscapes_labels()
-    # else:
-    #     raise NotImplementedError
     if dataset == 'detail':
         n_classes = 43
         label_colours = get_detail_labels()
     elif dataset == 'middle':
         n_classes = 24
-        label_colours = get_cityscapes_labels()
+        label_colours = get_mid_labels()
     elif dataset == 'main':
         n_classes = 9
+        label_colours = get_main_labels()
     else:
         raise NotImplementedError
 

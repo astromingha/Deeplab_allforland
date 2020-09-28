@@ -4,7 +4,7 @@
 import argparse
 import os
 import numpy as np
-from tqdm import tqdm
+
 from modeling.deeplab import *
 from dataloaders import custom_transforms as tr
 from PIL import Image
@@ -15,31 +15,24 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch DeeplabV3Plus Training")
-    parser.add_argument('--dataset_cat', type=str, default='detail',
+    parser.add_argument('--dataset_cat', type=str, default='detail',                # 추론할 토지피복도 유형 선택 (detail:세분류, middle:중분류, main:대분류)
                         choices=['detail', 'middle', 'main'], help='category')
-    parser.add_argument('--in_path', type=str,  default='/home/user/Dataset/LandCover/4th_data/cityscape_format/1st_newdataset/leftImg8bit/val')
-    parser.add_argument('--out_path', type=str,  default='/home/user/ddddddd')
-    parser.add_argument('--backbone', type=str, default='xception',
+    parser.add_argument('--in_path', type=str,  default='/home/user/')              # 추론할 이미지가 들어있는 폴더 경로 입력
+    parser.add_argument('--out_path', type=str,  default='/home/user/')             # 추론된 이미지 결과가 저장될 폴더 경로 입
+    parser.add_argument('--backbone', type=str, default='xception',                 # 추론 네트워크 백본 선택(checkpoint 와 동일해야 함)
                         choices=['resnet', 'xception', 'drn', 'mobilenet'],
                         help='backbone name (default: resnet)')
-    parser.add_argument('--ckpt', type=str, default='/home/user/Work/pytorch-deeplab-xception/run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',
+    parser.add_argument('--ckpt', type=str, default='run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',  #checkpoint 경로 입력(checkpoint이름 포함)
                         help='saved model')
-    parser.add_argument('--out-stride', type=int, default=16,
+    parser.add_argument('--out-stride', type=int, default=16,                       #out stride 값(checkpoint와 동일해야 함)
                         help='network output stride (default: 8)')
-    parser.add_argument('--no-cuda', action='store_true', default=True,
+    parser.add_argument('--no-cuda', action='store_true', default=False,            #True 시 GPU 사용안
                         help='disables CUDA training')
-    parser.add_argument('--gpu-ids', type=str, default='0',
+    parser.add_argument('--gpu-ids', type=str, default='0',함                        #사용할 GPU id
                         help='use which gpu to train, must be a \
                         comma-separated list of integers only (default=0)')
-    parser.add_argument('--dataset', type=str, default='cityscapes',
-                        choices=['pascal', 'coco', 'cityscapes'],
-                        help='dataset name (default: pascal)')
-    parser.add_argument('--crop-size', type=int, default=513,
+    parser.add_argument('--crop-size', type=int, default=513,                       #사진 입력 사이즈
                         help='crop image size')
-    parser.add_argument('--sync-bn', type=bool, default=None,
-                        help='whether to use sync bn (default: auto)')
-    parser.add_argument('--freeze-bn', type=bool, default=False,
-                        help='whether to freeze bn parameters (default: False)')
 
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -55,18 +48,12 @@ def main():
         else:
             args.sync_bn = False
 
-    if args.dataset_cat == 'detail':
-        num_class= 43
-    elif args.dataset_cat == 'middle':
-        num_class = 24
-    elif args.dataset_cat == 'main':
-        num_class = 9
 
-    model = DeepLab(num_classes=num_class,
+    model = DeepLab(num_classes=43,
                     backbone=args.backbone,
                     output_stride=args.out_stride,
-                    sync_bn=args.sync_bn,
-                    freeze_bn=args.freeze_bn)
+                    sync_bn=None,
+                    freeze_bn=False)
 
     ckpt = torch.load(args.ckpt, map_location='cpu')
     model.load_state_dict(ckpt['state_dict'])
@@ -75,14 +62,10 @@ def main():
         tr.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         tr.ToTensor()])
 
-    if not os.path.isdir(args.out_path):
-        os.mkdir(args.out_path)
-
-    img_list = [os.path.join(args.in_path,i) for i in os.listdir(args.in_path) if '.jpg' in i.lower() or '.png' in i.lower()]
-
-    for imgfile in tqdm(img_list):
-        image = Image.open(os.path.join(args.in_path,imgfile)).convert('RGB')
-        target = Image.open(os.path.join(args.in_path,imgfile)).convert('L')
+    img_list = [i for i in os.listdir(args.in_path) if '.jpg' in i.lower() or '.png' in i.lower()]
+    for imgfile in img_list:
+        image = Image.open(args.in_path + '/'+imgfile).convert('RGB')
+        target = Image.open(args.in_path+ '/'+imgfile).convert('L')
         sample = {'image': image, 'label': target}
         tensor_in = composed_transforms(sample)['image'].unsqueeze(0)
 
@@ -92,9 +75,9 @@ def main():
         with torch.no_grad():
             output = model(tensor_in)
 
-        grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy(),dataset=args.dataset_cat),
+        grid_image = make_grid(decode_seg_map_sequence(torch.max(output[:3], 1)[1].detach().cpu().numpy()),
                                 3, normalize=False, range=(0, 255))
-        save_image(grid_image, os.path.join(args.out_path,imgfile))
+        save_image(grid_image, args.out_path+'/'+imgfile)
     print("type(grid) is: ", type(grid_image))
     print("grid_image.shape is: ", grid_image.shape)
 

@@ -5,6 +5,8 @@ from collections import OrderedDict
 import glob
 from dataloaders.datasets import Landcover
 import json
+import pandas as pd
+
 class Saver(object):
 
     def __init__(self, args):
@@ -68,3 +70,12 @@ class Saver(object):
         for key, val in p.items():
             log_file.write(key + ':' + str(val) + '\n')
         log_file.close()
+
+    def save_metrics(self,iou, confusion_matrix):
+        ioufile = os.path.join(self.experiment_dir,'iou.csv')
+        conf_matrixfile = os.path.join(self.experiment_dir,'confustion_matrix.csv')
+
+        dataframe1 = pd.DataFrame(np.transpose(iou))
+        dataframe2 = pd.DataFrame(np.transpose(confusion_matrix))
+        dataframe1.to_csv(ioufile, header=False, index=False)
+        dataframe2.to_csv(conf_matrixfile, header=False, index=False)

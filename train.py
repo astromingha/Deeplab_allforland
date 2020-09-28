@@ -13,6 +13,7 @@ from utils.saver import Saver
 from utils.summaries import TensorboardSummary
 from utils.metrics import Evaluator
 
+
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
@@ -60,9 +61,9 @@ class Trainer(object):
         self.criterion = SegmentationLosses(weight=weight, cuda=args.cuda).build_loss(mode=args.loss_type)
         self.model, self.optimizer = model, optimizer
 
-        # Define Evaluator
+        # Define Evaluator : Evaluator 정의
         self.evaluator = Evaluator(self.nclass)
-        # Define lr scheduler
+        # Define lr scheduler : learning rate scheduler 정의
         self.scheduler = LR_Scheduler(args.lr_scheduler, args.lr,
                                       args.epochs, len(self.train_loader))
 
@@ -160,7 +161,7 @@ class Trainer(object):
         # Fast test during the training : Acc, Acc_class, mIoU 등 평가지표 계산 진행
         Acc = self.evaluator.Pixel_Accuracy()
         Acc_class = self.evaluator.Pixel_Accuracy_Class()
-        mIoU = self.evaluator.Mean_Intersection_over_Union()
+        mIoU, iou, confusion_matrix = self.evaluator.Mean_Intersection_over_Union_IOU()
         FWIoU = self.evaluator.Frequency_Weighted_Intersection_over_Union()
 
         # 평과 결과 tensorboard 로그 업데이트
@@ -185,6 +186,7 @@ class Trainer(object):
                 'optimizer': self.optimizer.state_dict(),
                 'best_pred': self.best_pred,
             }, is_best)
+            self.saver.save_metrics(iou, confusion_matrix)
 
 def main():
     # 학습 옵션 및 하이퍼파라미터 사용자 입력부분. default=에 원하는 값 입력
@@ -197,10 +199,6 @@ def main():
                         help='backbone name (default: resnet)')
     parser.add_argument('--out-stride', type=int, default=16, # out-stride 입력
                         help='network output stride (default: 16)')
-    # parser.add_argument('--dataset', type=str, default='cityscapes',
-    #                     choices=['pascal', 'coco', 'cityscapes'],
-    #                     help='dataset name (default: pascal)')
-
     parser.add_argument('--workers', type=int, default=1, # 1이상일 경우 멀티 프로세싱으로 진행(추천값 1)
                         metavar='N', help='dataloader threads')
     parser.add_argument('--base_size', type=int, default=513, # 학습 입력데이터 scaling시 기본 사이즈
@@ -240,8 +238,8 @@ def main():
     parser.add_argument('--nesterov', action='store_true', default=False, #Nesterov momentum 적용 여부 결정
                         help='whether use nesterov (default: False)')
     # cuda, seed and logging
-    parser.add_argument('--no-cuda', action='store_true', default=        # GPU 사용을 안 할경우 True
-                        False, help='disables CUDA training')
+    parser.add_argument('--no-cuda', action='store_true', default=False,    # GPU 사용을 안 할경우 True
+                        help='disables CUDA training')
     parser.add_argument('--gpu_ids', type=str, default='0',     # 사용을 원하는 GPU id 입력
                         help='use which gpu to train, must be a \
                         comma-separated list of integers only (default=0)')
