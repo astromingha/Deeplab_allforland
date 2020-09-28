@@ -32,5 +32,5 @@
   `python demo.py --in_path='추론할 이미지가 들어있는 폴더 경로' --out_path='추론된 이미지가 저장되는 폴더 경로'`
   
 ## 4. 결과
-- 경로 자동생성 :  Deeplab_allfor/run/deeplab-(backbone이름)/experiment_*
+- 경로 자동생성 :  Deeplab_allforland/run/deeplab-(backbone이름)/experiment_*
 - 결과물 및 로그 : 학습파라미터 관련 로그, checkpoint.tar.pth, tensorboard 로그용 tfrecords
