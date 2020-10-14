@@ -19,6 +19,20 @@
     
     `pip3 install -r requirements.txt`
 ## 3. 실행
+- 데이터셋 폴더 구성 :
+```bash
+Landcover_dataset(root)
+├── train
+│   ├── image
+│   │   └── image
+│   └── mask_detail
+│       └── mask
+└── valid
+    ├── image
+    │   └── image
+    └── mask
+        └── mask
+```
 - 학습 진행(train.py) : 
 
   `python train.py --dataset_path='데이터셋 root 경로(train,valid폴더가 들어있는 Landcover_dataset폴더의 절대경로)'`
