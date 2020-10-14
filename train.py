@@ -246,7 +246,7 @@ def main():
     parser.add_argument('--seed', type=int, default=1, metavar='S', # 학습에 사용되는 random값에 대한 시드 결정
                         help='random seed (default: 1)')
     # checking point
-    parser.add_argument('--resume', type=str, default='run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',    #학습 재개할 '.pth.tar' 파일 경로(없을시 None입력)
+    parser.add_argument('--resume', type=str, default=None,#example:'run/cityscapes/deeplab-xception/experiment_0/checkpoint.pth.tar',(학습 재개할 '.pth.tar' 파일 경로(없을시 None입력))
                         help='put the path to resuming file if needed')
     parser.add_argument('--checkname', type=str, default=None, # 학습 결과 저장시 폴더 이름 결정(None 일시 'run/deeplab-(backbone이름)'으로 자동저장)
                         help='set the checkpoint name')
